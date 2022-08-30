@@ -23,6 +23,22 @@ public class JspController {
     @GetMapping("/getCode")
     public void getCode(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         CodeUtil.processRequest(req, resp);
-
     }
+    @RequestMapping("/toHome")
+    public String toHome(){
+        return "/home";
+    }
+    @RequestMapping("/toIndex")
+    public String toIndex(){
+        return "/index";
+    }
+    @RequestMapping("/toUserAdd")
+    public String toUserAdd(){
+        return "/admin/add";
+    }
+    @RequestMapping("/toRelation")
+    public String toRelation(){
+        return "/admin/relation";
+    }
+
 }

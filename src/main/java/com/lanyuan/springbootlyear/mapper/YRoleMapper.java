@@ -3,6 +3,8 @@ package com.lanyuan.springbootlyear.mapper;
 import com.lanyuan.springbootlyear.pojo.YRole;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface YRoleMapper {
     int deleteByPrimaryKey(Integer id);
@@ -16,4 +18,6 @@ public interface YRoleMapper {
     int updateByPrimaryKeySelective(YRole record);
 
     int updateByPrimaryKey(YRole record);
+
+    List<YRole> selectByUid(Integer uid);
 }

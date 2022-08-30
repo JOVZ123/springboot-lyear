@@ -1,9 +1,11 @@
 package com.lanyuan.springbootlyear.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.lanyuan.springbootlyear.pojo.YUser;
 import com.lanyuan.springbootlyear.service.UserService;
 
 import com.lanyuan.springbootlyear.uitl.R;
+import com.lanyuan.springbootlyear.uitl.UploadDownloadUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -11,44 +13,46 @@ import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
+@ResponseBody
 public class UserController {
     @Autowired
     UserService userService;
+    Map<String,Object> map = new HashMap<>();
    @RequestMapping(value = "/login",method = RequestMethod.POST)
-   @ResponseBody
    public R login(YUser yuser, String code,HttpSession session){
        String randomCode = (String) session.getAttribute("randomCode");
-       Map<String,Object> map = new HashMap<>();
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(yuser.getAccount(), yuser.getPassword());
-        if (randomCode.equalsIgnoreCase(code)) {
+        if (!randomCode.equalsIgnoreCase(code)) {
+            map.put("error","验证码输入有误");
+            return R.error().data(map);
+        }else {
             try {
                 subject.login(usernamePasswordToken);
                 session.setAttribute("admin",subject.getPrincipal());
-                map.put("用户信息",subject.getPrincipal());
+                map.put("success","登录成功");
+                map.put("当前登录的用户信息",subject.getPrincipal());
                 return R.ok().data(map);
             } catch (AuthenticationException e) {
-                map.put("登录失败","error");
+                map.put("error","登录失败");
+                return R.error().data(map);
             }
-        }else {
-           map.put("error","验证码输入有误");
+
        }
-       return R.error().data(map);
    }
    @RequestMapping(value = "/register",method = RequestMethod.POST)
-    public String register(YUser yUser,String code,HttpSession session){
+   public R register(YUser yUser,String code,HttpSession session){
        String randomCode = (String) session.getAttribute("randomCode");
-       Map<String,Object> map = new HashMap<>();
        if (randomCode.equalsIgnoreCase(code)) {
            yUser.setCreatetime(new Date());
            SimpleHash password = new SimpleHash(
@@ -59,14 +63,109 @@ public class UserController {
            yUser.setPassword(String.valueOf(password));
            int register = userService.register(yUser);
            if (register>0){
-               return "redirect:/toLogin";
+               map.put("success","注册成功");
+               map.put("注册用户信息",yUser);
+               return R.ok().data(map);
+           }else {
+               map.put("error","注册失败");
+               return R.error().data(map);
            }
+       }else {
+           map.put("error","验证码输入有误");
+           return R.error().data(map);
        }
-       return "redirect:/toRegister";
    }
-   @RequestMapping(value = "/logout",method = RequestMethod.POST)
-    public String logout(HttpSession session){
-       session.invalidate();
-       return "redirect:/toLogin";
+   @GetMapping("/userShow")
+   public String show(HttpSession session, String search, @RequestParam(defaultValue = "1")Integer pageNum,@RequestParam(defaultValue = "4")Integer pageSize){
+       if (search==null){
+           search = (String) session.getAttribute("search");
+       }else {
+           session.setAttribute("search",search);
+       }
+       PageInfo<YUser> adminList = userService.show(pageNum,pageSize,search);
+       map.put("adminList",adminList);
+       System.out.println(adminList.toString());
+       return "/admin/list";
    }
+   @PostMapping("/userAdd")
+    public R userAdd(YUser yUser, MultipartFile myHead){
+       if (myHead.getOriginalFilename().length()>0) {
+           String headPic = UploadDownloadUtil.upload(myHead);
+           yUser.setHeadPic(headPic);
+       }
+       yUser.setCreatetime(new Date());
+       SimpleHash password = new SimpleHash(
+               "md5",
+               yUser.getPassword(),
+               yUser.getCreatetime().getTime()+"",
+               1024
+       );
+       yUser.setPassword(String.valueOf(password));
+       int userAdd = userService.register(yUser);
+       if (userAdd<0){
+           map.put("error","新增失败");
+           return R.error().data(map);
+       }
+       map.put("success","新增成功");
+       return R.ok().data(map);
+   }
+       @RequestMapping(value = "/userDel",method = RequestMethod.DELETE)
+    public R userDel(Integer id[]){
+       //修改字段进行删除 ，数据库还是存在
+       int i = userService.userDel(id);
+       Set<YUser> yUsers = userService.selectById(id);
+       map.put("删除的用户信息",yUsers);
+       return R.ok().data(map);
+   }
+   @RequestMapping(value = "/userUpd",method = RequestMethod.PUT)
+    public R userUpd(YUser yUser){
+       int i = userService.userUpd(yUser);
+       YUser user = userService.selectId(yUser.getId());
+       map.put("修改后的用户信息",user);
+       return R.ok().data(map);
+   }
+   @RequestMapping(value = "/userRoleRelation",method = RequestMethod.POST)
+   public R userRoleRelation(Integer userid,Integer[] roleid){
+       YUser user = userService.selectId(userid);
+        map.put("用户"+user.getAccount()+"初始绑定的角色信息",user.getyRoles());
+       //先删除原来的关系表
+       userService.removerelation(userid);
+
+       //再添加现有的
+       userService.relation(userid,roleid);
+       user = userService.selectId(userid);
+       map.put("用户"+user.getAccount()+"改变后绑定的角色信息",user.getyRoles());
+       return R.ok().data(map);
+   }
+
+    @RequestMapping(value = "/disable",method = RequestMethod.GET)
+    public R disable(Integer[] id) {
+        int n=0;
+        if (id != null) {
+             n = userService.disable(id);
+        }
+        if (n<=0){
+            map.put("error","禁用失败");
+            return R.error().data(map);
+        }
+        map.put("success","禁用成功");
+        map.put("禁用的用户信息",userService.selectById(id));
+        return R.ok().data(map);
+    }
+
+    @RequestMapping(value = "/opens",method = RequestMethod.GET)
+    public R open(Integer[] id) {
+        int n=0;
+        if (id != null) {
+            n = userService.open(id);
+        }
+        if (n<=0){
+            map.put("error","启用失败");
+            return R.error().data(map);
+        }
+        map.put("success","启用成功");
+        map.put("启用的用户信息",userService.selectById(id));
+        return R.ok().data(map);
+    }
+
 }

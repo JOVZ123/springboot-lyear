@@ -58,6 +58,12 @@
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.3.3</version>
 		</dependency>
+		<!-- 文件上传组件 -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.3.3</version>
+		</dependency>
 
 		<!--springboot整合shiro-->
 		<dependency>
@@ -69,6 +75,24 @@
 	</dependencies>
 
 	<build>
+		<!-- 配置将哪些资源文件(静态文件/模板文件/mapper文件)加载到tomcat输出目录里 -->
+		<resources>
+			<resource>
+				<directory>src/main/java</directory><!--java文件的路径-->
+				<includes>
+					<include>**/*.*</include>
+				</includes>
+				<!-- <filtering>false</filtering>-->
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory><!--资源文件的路径-->
+				<includes>
+					<include>**/*.*</include>
+				</includes>
+				<!-- <filtering>false</filtering>-->
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

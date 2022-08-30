@@ -13,6 +13,7 @@
     <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
     <result column="del" jdbcType="CHAR" property="del" />
     <result column="head_pic" jdbcType="VARCHAR" property="headPic" />
+    <collection property="yRoles" ofType="com.lanyuan.springbootlyear.pojo.YRole" select="com.lanyuan.springbootlyear.mapper.YRoleMapper.selectByUid" column="id"/>
   </resultMap>
   <sql id="Base_Column_List">
     id, account, name, password, phone, email, status, sex, createtime, del, head_pic
@@ -29,9 +30,29 @@
     <select id="selectByUsername" resultMap="BaseResultMap">
       select <include refid="Base_Column_List"/> from y_user where account = #{username}
     </select>
+    <select id="show" resultMap="BaseResultMap">
+      select <include refid="Base_Column_List"/> from y_user
+      <trim prefix="where" prefixOverrides="or">
+        <if test="account!=null">
+          <bind name="newaccount" value="'%'+account+'%'"/>
+          or account like #{newaccount}
+        </if>
+        <if test="name!=null">
+          <bind name="newname" value="'%'+name+'%'"/>
+          or name like #{newname}
+        </if>
+        <if test="phone!=null">
+          <bind name="newphone" value="'%'+phone+'%'"/>
+          or phone like #{newphone}
+        </if>
+      </trim>
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from y_user
     where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="removerelation">
+    delete from y_user_role where userid = #{userid}
   </delete>
   <insert id="insert" parameterType="com.lanyuan.springbootlyear.pojo.YUser">
     insert into y_user (id, account, name, 
@@ -116,6 +137,11 @@
       </if>
     </trim>
   </insert>
+
+  <insert id="insertRelation">
+    insert into y_user_role values(#{uid},#{rid})
+  </insert>
+
   <update id="updateByPrimaryKeySelective" parameterType="com.lanyuan.springbootlyear.pojo.YUser">
     update y_user
     <set>

@@ -1,7 +1,10 @@
 package com.lanyuan.springbootlyear.mapper;
 
 import com.lanyuan.springbootlyear.pojo.YUser;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface YUserMapper {
@@ -19,4 +22,10 @@ public interface YUserMapper {
     YUser login(YUser yUser);
 
     YUser selectByUsername(String username);
+
+    List<YUser> show(YUser yUser);
+
+    int insertRelation(@Param("uid") Integer uid, @Param("rid") Integer rid);
+
+    int removerelation(Integer userid);
 }

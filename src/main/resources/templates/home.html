@@ -8,9 +8,9 @@
 <meta name="keywords" content="LightYear,光年,后台模板,后台管理系统,光年HTML模板">
 <meta name="description" content="LightYear是一个基于Bootstrap v3.3.7的后台管理系统的HTML模板。">
 <meta name="author" content="yinqi">
-<link href="css/bootstrap.min.css" rel="stylesheet">
-<link href="css/materialdesignicons.min.css" rel="stylesheet">
-<link href="css/style.min.css" rel="stylesheet">
+<link th:href="@{css/bootstrap.min.css}" rel="stylesheet">
+<link th:href="@{css/materialdesignicons.min.css}" rel="stylesheet">
+<link th:href="@{css/style.min.css}" rel="stylesheet">
 </head>
   
 <body>
@@ -21,7 +21,7 @@
       
       <!-- logo -->
       <div id="logo" class="sidebar-header">
-        <a href="index.html"><img src="images/logo-sidebar.png" title="LightYear" alt="LightYear" /></a>
+        <a href="#"><img src="images/logo-sidebar.png" title="LightYear" alt="LightYear" /></a>
       </div>
       <div class="lyear-layout-sidebar-scroll"> 
         <!--功能菜单栏开始 每个ul为一个答菜单-->
@@ -30,8 +30,8 @@
             <li class="nav-item nav-item-has-subnav">
               <a href="javascript:void(0)"><i class="mdi mdi-format-align-justify"></i> 系统管理</a>
               <ul class="nav nav-subnav">
-                <li> <a  href="javascript:void(0)" _href="admin/list.html">用户管理</a> </li>
-                <li> <a href="javascript:void(0)" _href="role/list.html">角色管理</a> </li>
+                <li> <a href="javascript:void(0)" th:href="@{userShow}">用户管理</a> </li>
+                <li> <a href="javascript:void(0)" th:href="@{roleShow}">角色管理</a> </li>
               </ul>
             </li>
           </ul>
@@ -59,11 +59,11 @@
           <ul class="topbar-right">
             <li class="dropdown dropdown-profile">
               <a href="javascript:void(0)" data-toggle="dropdown">
-                <img class="img-avatar img-avatar-48 m-r-10" src="images/users/avatar.jpg" alt="笔下光年" />
-                <span>笔下光年 <span class="caret"></span></span>
+                <img class="img-avatar img-avatar-48 m-r-10" th:src="@{'/update/'+${session.admin.headPic}}" alt="笔下光年" />
+                <span th:text="${session.admin.name}"><span class="caret"></span></span>
               </a>
               <ul class="dropdown-menu dropdown-menu-right">
-                <li> <a th:href="@{/logout}"><i class="mdi mdi-logout-variant"></i> 退出登录</a> </li>
+                <li> <a href="login.html"><i class="mdi mdi-logout-variant"></i> 退出登录</a> </li>
               </ul>
             </li>
             <!--切换主题配色-->
@@ -203,16 +203,16 @@
     
     <!--页面主要内容-->
     <main class="lyear-layout-content">
-      <iframe src="index.html" id="main" frameborder="0" style="width: 100%;" ></iframe>
+      <iframe th:src="@{/toIndex}" id="main" frameborder="0" style="width: 100%;" ></iframe>
     </main>
     <!--End 页面主要内容-->
   </div>
 </div>
 
-<script type="text/javascript" src="js/jquery.min.js"></script>
-<script type="text/javascript" src="js/bootstrap.min.js"></script>
-<script type="text/javascript" src="js/perfect-scrollbar.min.js"></script>
-<script type="text/javascript" src="js/main.min.js"></script>
+<script type="text/javascript" th:src="@{js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" th:src="@{js/main.min.js}"></script>
 <!--iframe自适应高度-->
 <script>
     /*a标签点击跳转*/

@@ -33,12 +33,15 @@ public class ShiroConfig {
     @Bean
     ShiroFilterChainDefinition shiroFilterChainDefinition(){
         DefaultShiroFilterChainDefinition filter = new DefaultShiroFilterChainDefinition();
-        filter.addPathDefinition("/js/**","anon");
-        filter.addPathDefinition("/image/**","anon");
-        filter.addPathDefinition("/css/**","anon");
-        filter.addPathDefinition("/fonts/**","anon");
+//        filter.addPathDefinition("/js/**","anon");
+//        filter.addPathDefinition("/image/**","anon");
+//        filter.addPathDefinition("/css/**","anon");
+//        filter.addPathDefinition("/fonts/**","anon");
+//        filter.addPathDefinition("/getCode","anon");
+
 //        filter.addPathDefinition("/upload/**","anon");
-        filter.addPathDefinition("/logout","authc");
+        filter.addPathDefinition("/logout","logout");
+//        filter.addPathDefinition("/**","authc");
         return  filter;
     }
     //@Bean  方言 整合thymeleaf支持shiro标签
