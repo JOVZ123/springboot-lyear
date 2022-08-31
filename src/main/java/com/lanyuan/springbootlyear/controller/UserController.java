@@ -27,9 +27,9 @@ import java.util.Set;
 public class UserController {
     @Autowired
     UserService userService;
-    Map<String,Object> map = new HashMap<>();
    @RequestMapping(value = "/login",method = RequestMethod.POST)
    public R login(YUser yuser, String code,HttpSession session){
+       Map<String,Object> map = new HashMap<>();
        String randomCode = (String) session.getAttribute("randomCode");
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(yuser.getAccount(), yuser.getPassword());
@@ -52,6 +52,7 @@ public class UserController {
    }
    @RequestMapping(value = "/register",method = RequestMethod.POST)
    public R register(YUser yUser,String code,HttpSession session){
+       Map<String,Object> map = new HashMap<>();
        String randomCode = (String) session.getAttribute("randomCode");
        if (randomCode.equalsIgnoreCase(code)) {
            yUser.setCreatetime(new Date());
@@ -75,21 +76,36 @@ public class UserController {
            return R.error().data(map);
        }
    }
-   @GetMapping("/userShow")
-   public String show(HttpSession session, String search, @RequestParam(defaultValue = "1")Integer pageNum,@RequestParam(defaultValue = "4")Integer pageSize){
+   @RequestMapping(value = "/selectByAccount")
+   public R selectByAccount(String account){
+       Map<String,Object> map = new HashMap<>();
+       YUser user = userService.selectByUsername(account);
+       if (user==null){
+           map.put("success","账号可用");
+           return R.ok().data(map);
+       }else {
+           map.put("error","账号已被注册");
+           return R.error().data(map);
+       }
+   }
+
+   @PostMapping("/userShow")
+   public R show(HttpSession session, String search, @RequestParam(defaultValue = "1")Integer pageNum,@RequestParam(defaultValue = "4")Integer pageSize){
+       Map<String,Object> map = new HashMap<>();
        if (search==null){
            search = (String) session.getAttribute("search");
        }else {
            session.setAttribute("search",search);
        }
        PageInfo<YUser> adminList = userService.show(pageNum,pageSize,search);
+       //session.setAttribute("adminList",adminList);
        map.put("adminList",adminList);
-       System.out.println(adminList.toString());
-       return "/admin/list";
+       return R.ok().data(map);
    }
    @PostMapping("/userAdd")
     public R userAdd(YUser yUser, MultipartFile myHead){
-       if (myHead.getOriginalFilename().length()>0) {
+       Map<String,Object> map = new HashMap<>();
+       if (myHead!=null&&myHead.getOriginalFilename().length()>0) {
            String headPic = UploadDownloadUtil.upload(myHead);
            yUser.setHeadPic(headPic);
        }
@@ -109,8 +125,9 @@ public class UserController {
        map.put("success","新增成功");
        return R.ok().data(map);
    }
-       @RequestMapping(value = "/userDel",method = RequestMethod.DELETE)
+   @RequestMapping(value = "/userDel",method = RequestMethod.DELETE)
     public R userDel(Integer id[]){
+       Map<String,Object> map = new HashMap<>();
        //修改字段进行删除 ，数据库还是存在
        int i = userService.userDel(id);
        Set<YUser> yUsers = userService.selectById(id);
@@ -119,6 +136,13 @@ public class UserController {
    }
    @RequestMapping(value = "/userUpd",method = RequestMethod.PUT)
     public R userUpd(YUser yUser){
+       Map<String,Object> map = new HashMap<>();
+       yUser.setCreatetime(new Date());
+       SimpleHash password=new SimpleHash("md5",
+               yUser.getPassword(),
+               yUser.getCreatetime().getTime()+"",
+               1024);
+       yUser.setPassword(String.valueOf(password));
        int i = userService.userUpd(yUser);
        YUser user = userService.selectId(yUser.getId());
        map.put("修改后的用户信息",user);
@@ -126,6 +150,7 @@ public class UserController {
    }
    @RequestMapping(value = "/userRoleRelation",method = RequestMethod.POST)
    public R userRoleRelation(Integer userid,Integer[] roleid){
+       Map<String,Object> map = new HashMap<>();
        YUser user = userService.selectId(userid);
         map.put("用户"+user.getAccount()+"初始绑定的角色信息",user.getyRoles());
        //先删除原来的关系表
@@ -138,8 +163,9 @@ public class UserController {
        return R.ok().data(map);
    }
 
-    @RequestMapping(value = "/disable",method = RequestMethod.GET)
+    @RequestMapping(value = "/userDisable",method = RequestMethod.GET)
     public R disable(Integer[] id) {
+        Map<String,Object> map = new HashMap<>();
         int n=0;
         if (id != null) {
              n = userService.disable(id);
@@ -153,8 +179,9 @@ public class UserController {
         return R.ok().data(map);
     }
 
-    @RequestMapping(value = "/opens",method = RequestMethod.GET)
+    @RequestMapping(value = "/userOpens",method = RequestMethod.GET)
     public R open(Integer[] id) {
+        Map<String,Object> map = new HashMap<>();
         int n=0;
         if (id != null) {
             n = userService.open(id);

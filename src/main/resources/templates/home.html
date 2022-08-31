@@ -30,8 +30,8 @@
             <li class="nav-item nav-item-has-subnav">
               <a href="javascript:void(0)"><i class="mdi mdi-format-align-justify"></i> 系统管理</a>
               <ul class="nav nav-subnav">
-                <li> <a href="javascript:void(0)" th:href="@{userShow}">用户管理</a> </li>
-                <li> <a href="javascript:void(0)" th:href="@{roleShow}">角色管理</a> </li>
+                <li> <a href="javascript:void(0)" target="parent" _href="/springboot/toUserList" >用户管理</a> </li>
+                <li> <a href="javascript:void(0)" target="parent" _href="/springboot/toRoleList">角色管理</a> </li>
               </ul>
             </li>
           </ul>
@@ -203,7 +203,7 @@
     
     <!--页面主要内容-->
     <main class="lyear-layout-content">
-      <iframe th:src="@{/toIndex}" id="main" frameborder="0" style="width: 100%;" ></iframe>
+      <iframe th:src="@{/toIndex}" id="main" name="parent" frameborder="0" style="width: 100%;" ></iframe>
     </main>
     <!--End 页面主要内容-->
   </div>
@@ -215,8 +215,11 @@
 <script type="text/javascript" th:src="@{js/main.min.js}"></script>
 <!--iframe自适应高度-->
 <script>
+
     /*a标签点击跳转*/
+
     $("a").click(function () {
+      $("#main").attr( "target" ,"parent");
         var href = $(this).attr("_href");
         if(href!=null&&href!=""){
             $("#main").attr("src",href);
@@ -255,6 +258,39 @@
 //        iframe.style.visibility = 'visible';
 //        // this.style.display = 'block';
 //    }
+
+  // function jump_userList() {
+  //   $.ajax({
+  //     url: "/springboot/userShow",
+  //     dateType:"json",
+  //     type:"get",
+  //     success:function (data) {
+  //       if (data.code==200){
+  //         $.ajax({
+  //           url:"/springboot/toUserList",
+  //           type:"post",
+  //           data:{
+  //             adminList:data.data.adminList
+  //           }
+  //
+  //         })
+  //         console.log(data.data.adminList)
+  //       }
+  //       window.location.href="/springboot/toUserList"
+  //     }
+  //   })
+  // }
+  // function jump_roleList() {
+  //   $.ajax({
+  //     url:"/springboot/roleShow",
+  //     type:"get",
+  //     success:function (data) {
+  //       if (data.code==200){
+  //         window.location.href="/springboot/toRoleList"
+  //       }
+  //     }
+  //   })
+  // }
 </script>
 </body>
 </html>

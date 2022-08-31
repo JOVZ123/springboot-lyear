@@ -20,7 +20,15 @@
   <select id="selectByUid" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/> from y_user_role us,y_role r where r.id=us.roleid and us.userid = #{uid}
   </select>
-
+  <select id="show" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from y_role
+    <trim prefix="where" prefixOverrides="or">
+      <if test="reloname!=null">
+        <bind name="newname" value="'%'+reloname+'%'"/>
+        or reloname like #{newname}
+      </if>
+    </trim>
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from y_role
     where id = #{id,jdbcType=INTEGER}

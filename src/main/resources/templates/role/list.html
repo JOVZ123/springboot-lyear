@@ -8,9 +8,9 @@
 <meta name="keywords" content="LightYear,光年,后台模板,后台管理系统,光年HTML模板">
 <meta name="description" content="LightYear是一个基于Bootstrap v3.3.7的后台管理系统的HTML模板。">
 <meta name="author" content="yinqi">
-<link href="../css/bootstrap.min.css" rel="stylesheet">
-<link href="../css/materialdesignicons.min.css" rel="stylesheet">
-<link href="../css/style.min.css" rel="stylesheet">
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+<link th:href="@{/css/materialdesignicons.min.css}" rel="stylesheet">
+<link th:href="@{/css/style.min.css}" rel="stylesheet">
 </head>
   
 <body>
@@ -22,8 +22,6 @@
         <div class="card-toolbar clearfix">
           <div class="toolbar-btn-action">
             <a class="btn btn-primary m-r-5" href="add.html"><i class="mdi mdi-plus"></i> 新增</a>
-            <a class="btn btn-success m-r-5" href="#!"><i class="mdi mdi-check"></i> 启用</a>
-            <a class="btn btn-warning m-r-5" href="#!"><i class="mdi mdi-block-helper"></i> 禁用</a>
             <a class="btn btn-danger" href="#!"><i class="mdi mdi-window-close"></i> 删除</a>
           </div>
         </div>
@@ -40,32 +38,30 @@
                     </th>
                     <th>编号</th>
                     <th>角色名</th>
-                    <th>创建人</th>
-                    <th>简介</th>
                     <th>状态</th>
                     <th>操作</th>
                   </tr>
               </thead>
               <tbody>
-              <tr>
-                <td>
-                  <label class="lyear-checkbox checkbox-primary">
-                    <input type="checkbox" name="ids[]" value="1"><span></span>
-                  </label>
-                </td>
-                <td>1</td>
-                <td>admin</td>
-                <td>admin</td>
-                <td>超级管理员</td>
-                <td><font class="text-success">正常</font></td>
-                <td>
-                  <div class="btn-group">
-                    <a class="btn btn-xs btn-default" href="#!" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a>
-                    <a class="btn btn-xs btn-default" href="#!" title="删除" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></a>
-                    <a class="btn btn-xs btn-default" href="../admin/resources.html" title="分配权限" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></a>
-                  </div>
-                </td>
-              </tr>
+<!--              <tr th:each="role:${session.roleList.list}">-->
+<!--                <td>-->
+<!--                  <label class="lyear-checkbox checkbox-primary">-->
+<!--                    <input type="checkbox" name="id" th:value="${role.id}"><span></span>-->
+<!--                  </label>-->
+<!--                </td>-->
+<!--                <td th:text="${role.id}"></td>-->
+<!--                <td th:text="${role.reloname}"></td>-->
+<!--                <td>-->
+<!--                  <span class="text-success" th:if="${role.status eq '1'}">启用</span>-->
+<!--                  <span class="text-danger" th:if="${role.status eq '0'}">禁用</span>-->
+<!--                </td>-->
+<!--                <td>-->
+<!--                  <div class="btn-group">-->
+<!--                    <a class="btn btn-xs btn-default" href="#!" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a>-->
+<!--                    <a class="btn btn-xs btn-default" href="#!" title="删除" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></a>-->
+<!--                  </div>-->
+<!--                </td>-->
+<!--              </tr>-->
               </tbody>
             </table>
           </div>
@@ -93,10 +89,10 @@
 
 </div>
 
-<script type="text/javascript" src="../js/jquery.min.js"></script>
-<script type="text/javascript" src="../js/bootstrap.min.js"></script>
-<script type="text/javascript" src="../js/perfect-scrollbar.min.js"></script>
-<script type="text/javascript" src="../js/main.min.js"></script>
+<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.min.js}"></script>
 <script type="text/javascript">
 $(function(){
     $('.search-bar .dropdown-menu a').click(function() {

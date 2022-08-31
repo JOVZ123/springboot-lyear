@@ -57,7 +57,7 @@
       <div id="error" style="color: red"></div>
       <form onsubmit="return checked()">
         <div class="form-group has-feedback feedback-left">
-          <input type="text" placeholder="请输入您的用户名" class="form-control" name="account" id="username" />
+          <input type="text" placeholder="请输入您的用户名" class="form-control" onblur="selectByAccount()" name="account" id="username" />
           <span class="mdi mdi-account form-control-feedback" aria-hidden="true"></span>
         </div>
         <div class="form-group has-feedback feedback-left">
@@ -118,6 +118,27 @@
       return false;
     }
     return true;
+  }
+  function selectByAccount() {
+    var username = document.getElementById("username").value;
+    $.post('/springboot/selectByAccount?account='+username,function (data) {
+      if (data.code==200){
+        lightyear.loading('show');
+        // 假设ajax提交操作
+        setTimeout(function () {
+          lightyear.loading('hide');
+          lightyear.notify("账号可用", 'success', 100);
+        }, 200)
+
+      }else {
+        lightyear.loading('show');
+        // 假设ajax提交操作
+        setTimeout(function () {
+          lightyear.loading('hide');
+          lightyear.notify("账号已被注册", 'danger', 100);
+        }, 200)
+      }
+    })
   }
   function cli() {
     var username = document.getElementById("username").value;

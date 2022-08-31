@@ -20,4 +20,5 @@ public interface YRoleMapper {
     int updateByPrimaryKey(YRole record);
 
     List<YRole> selectByUid(Integer uid);
+    List<YRole> show(YRole role);
 }

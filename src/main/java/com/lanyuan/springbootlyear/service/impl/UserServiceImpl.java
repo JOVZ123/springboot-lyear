@@ -64,6 +64,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public YUser selectId(Integer id) {
+        return mapper.selectByPrimaryKey(id);
+    }
+    @Override
     public Set<YUser> selectById(Integer[] id) {
         Set<YUser> set = new HashSet<>();
         for (Integer i : id) {
@@ -72,12 +76,6 @@ public class UserServiceImpl implements UserService {
         }
         return set;
     }
-
-    @Override
-    public YUser selectId(Integer id) {
-        return mapper.selectByPrimaryKey(id);
-    }
-
     @Override
     public int userUpd(YUser user) {
         return mapper.updateByPrimaryKeySelective(user);
