@@ -35,8 +35,6 @@ public class YUser implements Serializable {
 
     private String del;
 
-    private String headPic;
-
     private static final long serialVersionUID = 1L;
 
     public Integer getId() {
@@ -119,14 +117,6 @@ public class YUser implements Serializable {
         this.del = del == null ? null : del.trim();
     }
 
-    public String getHeadPic() {
-        return headPic;
-    }
-
-    public void setHeadPic(String headPic) {
-        this.headPic = headPic == null ? null : headPic.trim();
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -143,7 +133,6 @@ public class YUser implements Serializable {
         sb.append(", sex=").append(sex);
         sb.append(", createtime=").append(createtime);
         sb.append(", del=").append(del);
-        sb.append(", headPic=").append(headPic);
         sb.append("]");
         return sb.toString();
     }

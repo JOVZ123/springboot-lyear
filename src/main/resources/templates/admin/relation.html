@@ -20,13 +20,14 @@
     <div class="row">
       <div class="col-lg-12">
         <div class="card">
-          <div class="card-header"><h4>设置角色</h4></div>
+          <div class="card-header"><h4>关联角色</h4></div>
           <div class="card-body">
 
             <form action="#!" method="post">
+              <input style="display: none" id="userid" name="userid" th:value="${user.id}">
               <div class="form-group">
                 <label for="example-text-input">用户名</label>
-                <input class="form-control" type="text" name="role-input" placeholder="用户名">
+                <input class="form-control" type="text" disabled name="role-input" th:value="${user.account}" placeholder="用户名">
               </div>
               <div class="table-responsive">
               <table class="table table-striped">
@@ -42,32 +43,17 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td>
+                    <td th:each="role:${yRoles}">
                       <label class="lyear-checkbox checkbox-primary">
-                        <input name="rules[]" type="checkbox" class="checkbox-parent" dataid="id-1" value="1">
-                        <span> 系统管理</span>
-                      </label>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="p-l-20">
-                      <label class="lyear-checkbox checkbox-primary">
-                        <input name="rules[]" type="checkbox" class="checkbox-parent checkbox-child" dataid="id-1-5" value="5">
-                        <span> 网站设置</span>
-                      </label>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="p-l-20">
-                      <label class="lyear-checkbox checkbox-primary">
-                        <input name="rules[]" type="checkbox" class="checkbox-parent checkbox-child" dataid="id-1-6" value="6">
-                        <span> 配置管理</span>
+                        <input name="roleid" type="checkbox" class="checkbox-parent" dataid="id-1" th:value="${role.id}">
+                        <span th:text="${role.reloname}"></span>
                       </label>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
+              <button type="button" onclick="cli()" class="btn btn-primary ajax-post" target-form="add-form">提交</button>
             </form>
 
           </div>
@@ -84,8 +70,12 @@
 <script type="text/javascript" th:src="@{/js/main.min.js}"></script>
 
 <script type="text/javascript" th:src="@{/js/chosen.jquery.min.js}"></script>
+  <!--消息提示-->
+  <script th:src="@{/js/bootstrap-notify.min.js}"></script>
+  <script th:src="@{/js/lightyear.js}"></script>
+  <script th:src="@{/js/main.min.js}"></script>
 <script type="text/javascript">
-$(function(){
+  $(function(){
     //动态选择框，上下级选中状态变化
     $('input.checkbox-parent').on('change', function(){
         var dataid = $(this).attr("dataid");
@@ -119,6 +109,44 @@ $(function(){
         }
     });
 });
+  function cliBtn(){
+    var cks = document.getElementsByName("roleid");
+    var str="";
+    for(var i=0;i<cks.length;i++){
+      if (cks[i].checked) {
+        str+=cks[i].value+",";
+      }
+    }
+    str = str.substring(0,str.length-1);
+    var result = str.split(",");
+    return result;
+  }
+  function cli() {
+    var userid = document.getElementById("userid").value;
+    var roleids =cliBtn()
+    console.log(roleids)
+    $.post('/springboot/userRoleRelation?userid='+userid+'&roleid='+roleids,function (data) {
+      if (data.code==200){
+        lightyear.loading('show');
+        // 假设ajax提交操作
+        setTimeout(function () {
+          lightyear.loading('hide');
+          lightyear.notify("关联成功", 'success', 100);
+          setTimeout(function () {
+            window.location.href="/springboot/user/show";
+          },400)
+        }, 200)
+      }else {
+        lightyear.loading('show');
+        // 假设ajax提交操作
+        setTimeout(function () {
+          lightyear.loading('hide');
+          lightyear.notify("关联失败", 'danger', 100);
+        }, 200)
+      }
+    })
+
+  }
 </script>
 </body>
 </html>

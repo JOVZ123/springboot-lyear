@@ -35,6 +35,12 @@ public class RoleServiceImpl implements RoleService {
         List<YRole> show = mapper.show(role);
         return new PageInfo<>(show);
     }
+
+    @Override
+    public YRole selectByRolename(String rolename) {
+        return mapper.selectByRolename(rolename);
+    }
+
     @Override
     public YRole selectId(Integer id) {
         return mapper.selectByPrimaryKey(id);
@@ -60,5 +66,10 @@ public class RoleServiceImpl implements RoleService {
             return -1;
         }
         return n;
+    }
+
+    @Override
+    public List<YRole> roleAll() {
+        return mapper.roleAll();
     }
 }

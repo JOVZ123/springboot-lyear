@@ -40,16 +40,8 @@ public class UserServiceImpl implements UserService {
         PageHelper.startPage(pageNum,pageSize);
         YUser yUser = new YUser();
         yUser.setAccount(search);
-        yUser.setName(search);
-        yUser.setPhone(search);
         List<YUser> show = mapper.show(yUser);
-        List<YUser> list = new ArrayList<>();
-        for (YUser user : show) {
-            if ("1".equals(user.getDel())){
-                list.add(user);
-            }
-        }
-        return new PageInfo<>(list);
+        return new PageInfo<>(show);
     }
     @Override
     public int delete(Integer[] id) {

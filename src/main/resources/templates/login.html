@@ -55,7 +55,7 @@
   <div class="lyear-login">
     <div class="login-center">
       <div id="error" style="color: red"></div>
-      <form onsubmit="return checked()">
+      <form>
         <div class="form-group has-feedback feedback-left">
           <input type="text" placeholder="请输入您的用户名" class="form-control" name="account" id="username" />
           <span class="mdi mdi-account form-control-feedback" aria-hidden="true"></span>
@@ -92,7 +92,7 @@
 </body>
 </html>
 <script>
-  function checked() {
+  function cli() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
     var code = document.getElementById("code").value;
@@ -109,12 +109,6 @@
       error.innerHTML="验证码不可以为空";
       return false;
     }
-    return true;
-  }
-  function cli() {
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-    var code = document.getElementById("code").value;
     $.ajax({
       dateType:"json",
       url:"/springboot/login",

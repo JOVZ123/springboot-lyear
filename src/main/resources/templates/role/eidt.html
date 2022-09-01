@@ -22,25 +22,25 @@
     <div class="col-lg-12">
       <div class="card">
         <div class="card-body">
-
-          <form action="#!" method="post" class="row">
+          <form class="row">
+            <input id="id" name="id" style="display: none" th:value="${yRole.id}">
             <div class="form-group col-md-12">
-              <label for="name">角色名</label>
-              <input type="text" class="form-control" id="name" name="name" value="" placeholder="角色名" />
+              <label for="reloname">角色名</label>
+              <input type="text" class="form-control" id="reloname" name="reloname" th:value="${yRole.reloname}" placeholder="角色名" />
             </div>
             <div class="form-group col-md-12">
-              <label for="status">状态</label>
+              <label>状态</label>
               <div class="clearfix">
                 <label class="lyear-radio radio-inline radio-primary">
-                  <input type="radio" name="status" th:value="0"><span>禁用</span>
+                  <input type="radio" name="status" th:checked="${yRole.status eq '0'}" th:value="0"><span>禁用</span>
                 </label>
                 <label class="lyear-radio radio-inline radio-primary">
-                  <input type="radio" name="status" th:value="1" checked><span>启用</span>
+                  <input type="radio" name="status" th:checked="${yRole.status eq '1'}"  th:value="1"><span>启用</span>
                 </label>
               </div>
             </div>
             <div class="form-group col-md-12">
-              <button type="submit" class="btn btn-primary ajax-post" target-form="add-form">确 定</button>
+              <button type="button" onclick="cli()" class="btn btn-primary ajax-post" target-form="add-form">确 定</button>
               <button type="button" class="btn btn-default" onclick="javascript:history.back(-1);return false;">返 回</button>
             </div>
           </form>
@@ -59,5 +59,75 @@
 <!--标签插件-->
 <script th:src="@{/js/jquery-tags-input/jquery.tagsinput.min.js}"></script>
 <script type="text/javascript" th:src="@{/js/main.min.js}"></script>
+<!--消息提示-->
+<script th:src="@{/js/bootstrap-notify.min.js}"></script>
+<script th:src="@{/js/lightyear.js}"></script>
+<script th:src="@{/js/main.min.js}"></script>
 </body>
 </html>
+
+<script>
+  function cli() {
+    var status = document.getElementsByName("status");
+    var id = document.getElementById("id")
+    var statuss;
+    for (var i = 0; i <status.length ; i++) {
+      if (status[i].checked){
+        statuss= status[i].value;
+      }
+    }
+    var reloname = document.getElementById("reloname").value;
+    if (reloname!=null) {
+      $.post('/springboot/selectByRolename?rolename='+ reloname, function (data) {
+        if (data.code==200) {
+          $.ajax({
+            url: "/springboot/roleUpd",
+            type: "post",
+            dataType: "json",
+            data: {
+              id:id,
+              reloname: reloname,
+              status:statuss
+            },
+            success: function (data) {
+              alert("hdaio")
+              if (data.code == 200) {
+                lightyear.loading('show');
+                // 假设ajax提交操作
+                setTimeout(function () {
+                  lightyear.loading('hide');
+                  lightyear.notify("修改成功", 'success', 100);
+                  setTimeout(function () {
+                    window.location.href = "/springboot/role/show"
+                  },700)
+                }, 200)
+              } else {
+                lightyear.loading('show');
+                // 假设ajax提交操作
+                setTimeout(function () {
+                  lightyear.loading('hide');
+                  lightyear.notify("修改失败", 'danger', 100);
+                }, 200)
+              }
+            }
+          })
+        } else {
+          lightyear.loading('show');
+          // 假设ajax提交操作
+          setTimeout(function () {
+            lightyear.loading('hide');
+            lightyear.notify("角色名已存在", 'danger', 100);
+          }, 200)
+        }
+      })
+    }else{
+      lightyear.loading('show');
+      // 假设ajax提交操作
+      setTimeout(function () {
+        lightyear.loading('hide');
+        lightyear.notify("修改失败", 'danger', 100);
+      }, 200)
+    }
+  }
+
+</script>

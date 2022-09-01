@@ -21,4 +21,8 @@ public interface YRoleMapper {
 
     List<YRole> selectByUid(Integer uid);
     List<YRole> show(YRole role);
+
+    YRole selectByRolename(String reloname);
+
+    List<YRole> roleAll();
 }

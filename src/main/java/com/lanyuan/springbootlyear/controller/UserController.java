@@ -103,12 +103,8 @@ public class UserController {
        return R.ok().data(map);
    }
    @PostMapping("/userAdd")
-    public R userAdd(YUser yUser, MultipartFile myHead){
+    public R userAdd(YUser yUser){
        Map<String,Object> map = new HashMap<>();
-       if (myHead!=null&&myHead.getOriginalFilename().length()>0) {
-           String headPic = UploadDownloadUtil.upload(myHead);
-           yUser.setHeadPic(headPic);
-       }
        yUser.setCreatetime(new Date());
        SimpleHash password = new SimpleHash(
                "md5",
@@ -118,15 +114,16 @@ public class UserController {
        );
        yUser.setPassword(String.valueOf(password));
        int userAdd = userService.register(yUser);
-       if (userAdd<0){
+       if (userAdd<=0){
            map.put("error","新增失败");
            return R.error().data(map);
+       }else {
+           map.put("success", "新增成功");
+           return R.ok().data(map);
        }
-       map.put("success","新增成功");
-       return R.ok().data(map);
    }
    @RequestMapping(value = "/userDel",method = RequestMethod.DELETE)
-    public R userDel(Integer id[]){
+    public R userDel(Integer[] id){
        Map<String,Object> map = new HashMap<>();
        //修改字段进行删除 ，数据库还是存在
        int i = userService.userDel(id);
@@ -134,7 +131,7 @@ public class UserController {
        map.put("删除的用户信息",yUsers);
        return R.ok().data(map);
    }
-   @RequestMapping(value = "/userUpd",method = RequestMethod.PUT)
+   @RequestMapping(value = "/userUpd",method = RequestMethod.POST)
     public R userUpd(YUser yUser){
        Map<String,Object> map = new HashMap<>();
        yUser.setCreatetime(new Date());
@@ -145,8 +142,13 @@ public class UserController {
        yUser.setPassword(String.valueOf(password));
        int i = userService.userUpd(yUser);
        YUser user = userService.selectId(yUser.getId());
-       map.put("修改后的用户信息",user);
-       return R.ok().data(map);
+       if (i<=0){
+           map.put("error","修改失败");
+           return R.error().data(map);
+       }else {
+           map.put("修改后的用户信息", user);
+           return R.ok().data(map);
+       }
    }
    @RequestMapping(value = "/userRoleRelation",method = RequestMethod.POST)
    public R userRoleRelation(Integer userid,Integer[] roleid){

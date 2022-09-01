@@ -30,8 +30,8 @@
             <li class="nav-item nav-item-has-subnav">
               <a href="javascript:void(0)"><i class="mdi mdi-format-align-justify"></i> 系统管理</a>
               <ul class="nav nav-subnav">
-                <li> <a href="javascript:void(0)" target="parent" _href="/springboot/toUserList" >用户管理</a> </li>
-                <li> <a href="javascript:void(0)" target="parent" _href="/springboot/toRoleList">角色管理</a> </li>
+                <li> <a href="javascript:void(0)" target="parent" _href="/springboot/user/show" >用户管理</a> </li>
+                <li> <a href="javascript:void(0)" target="parent" _href="/springboot/role/show">角色管理</a> </li>
               </ul>
             </li>
           </ul>
@@ -59,7 +59,6 @@
           <ul class="topbar-right">
             <li class="dropdown dropdown-profile">
               <a href="javascript:void(0)" data-toggle="dropdown">
-                <img class="img-avatar img-avatar-48 m-r-10" th:src="@{'/update/'+${session.admin.headPic}}" alt="笔下光年" />
                 <span th:text="${session.admin.name}"><span class="caret"></span></span>
               </a>
               <ul class="dropdown-menu dropdown-menu-right">
