@@ -72,6 +72,9 @@
               <a th:href="@{/role/show(pageNum=${i})}"><span th:text="${i}"></span></a>
             </li>
             <li><a th:href="@{/role/show(pageNum=${roleList.nextPage})}">»</a></li>
+            <a style="margin-left: 700px;">
+              <input type="text" id="page"   value="" placeholder="页" style="display:inline-block ;width: 40px ;height: 33px;outline: none "></a>
+            <a class="btn btn-primary m-r-5" onclick="formFeed()" style="line-height: 15px; width: 50px;align-content: center" >GO</a>
           </ul>
 
         </div>
@@ -98,6 +101,14 @@ $(function(){
         $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
     });
 });
+function formFeed() {
+  var page = document.getElementById("page").value;
+  $.post("/springboot/roleShow?pageNum=" + page, function (data) {
+    if (data.code == 200) {
+      window.location.href = "/springboot/role/show?pageNum=" + page;
+    }
+  })
+}
 //获取选中的id值
 function cliBtn(){
   var cks = document.getElementsByName("ids[]");

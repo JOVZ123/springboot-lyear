@@ -6,11 +6,9 @@ import com.lanyuan.springbootlyear.pojo.YUser;
 import com.lanyuan.springbootlyear.service.RoleService;
 import com.lanyuan.springbootlyear.service.UserService;
 import com.lanyuan.springbootlyear.uitl.CodeUtil;
-import com.lanyuan.springbootlyear.uitl.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -104,14 +102,6 @@ public class JspController {
         return "/role/list";
     }
 
-    @RequestMapping(value = "/user/disable",method = RequestMethod.GET)
-    public String disable(Integer[] id) {
-        int n=0;
-        if (id != null) {
-            n = userService.disable(id);
-        }
-        return "redirect:/user/show";
-    }
     @RequestMapping(value = "/user/delete",method = RequestMethod.GET)
     public String userDel(Integer[] id){
         int i = userService.userDel(id);
@@ -122,13 +112,4 @@ public class JspController {
         int i = roleService.delete(id);
         return "redirect:/role/show";
     }
-    @RequestMapping(value = "/user/opens",method = RequestMethod.GET)
-    public String open(Integer[] id) {
-        int n=0;
-        if (id != null) {
-            n = userService.open(id);
-        }
-        return "redirect:/user/show";
-    }
-
 }

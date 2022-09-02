@@ -69,7 +69,7 @@
 <script>
   function cli() {
     var status = document.getElementsByName("status");
-    var id = document.getElementById("id")
+    var id = document.getElementById("id").value;
     var statuss;
     for (var i = 0; i <status.length ; i++) {
       if (status[i].checked){
@@ -77,12 +77,12 @@
       }
     }
     var reloname = document.getElementById("reloname").value;
-    if (reloname!=null) {
-      $.post('/springboot/selectByRolename?rolename='+ reloname, function (data) {
-        if (data.code==200) {
+    if (reloname != null && reloname != "") {
+      $.post('/springboot/selectByRolename?rolename=' + reloname, function (data) {
+        if (data.code == 200) {
           $.ajax({
             url: "/springboot/roleUpd",
-            type: "post",
+            type: "put",
             dataType: "json",
             data: {
               id:id,
@@ -90,7 +90,6 @@
               status:statuss
             },
             success: function (data) {
-              alert("hdaio")
               if (data.code == 200) {
                 lightyear.loading('show');
                 // 假设ajax提交操作
@@ -101,6 +100,7 @@
                     window.location.href = "/springboot/role/show"
                   },700)
                 }, 200)
+
               } else {
                 lightyear.loading('show');
                 // 假设ajax提交操作

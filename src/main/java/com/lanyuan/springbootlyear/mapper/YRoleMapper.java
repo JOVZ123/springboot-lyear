@@ -25,4 +25,6 @@ public interface YRoleMapper {
     YRole selectByRolename(String reloname);
 
     List<YRole> roleAll();
+
+    int removerelation(Integer roleid);
 }

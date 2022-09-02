@@ -43,7 +43,7 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td th:each="role:${yRoles}">
+                    <td style="width: 25%; float: left" th:each="role:${yRoles}">
                       <label class="lyear-checkbox checkbox-primary">
                         <input name="roleid" type="checkbox" class="checkbox-parent" dataid="id-1" th:value="${role.id}">
                         <span th:text="${role.reloname}"></span>
@@ -75,40 +75,6 @@
   <script th:src="@{/js/lightyear.js}"></script>
   <script th:src="@{/js/main.min.js}"></script>
 <script type="text/javascript">
-  $(function(){
-    //动态选择框，上下级选中状态变化
-    $('input.checkbox-parent').on('change', function(){
-        var dataid = $(this).attr("dataid");
-        $('input[dataid^=' + dataid + '-]').prop('checked', $(this).is(':checked'));
-    });
-    $('input.checkbox-child').on('change', function(){
-        var dataid = $(this).attr("dataid");
-            dataid = dataid.substring(0, dataid.lastIndexOf("-"));
-        var parent = $('input[dataid=' + dataid + ']');
-        if($(this).is(':checked')){
-            parent.prop('checked', true);
-            //循环到顶级
-            while(dataid.lastIndexOf("-") != 2){
-                dataid = dataid.substring(0, dataid.lastIndexOf("-"));
-                parent = $('input[dataid=' + dataid + ']');
-                parent.prop('checked', true);
-            }
-        }else{
-            //父级
-            if($('input[dataid^=' + dataid + '-]:checked').length == 0){
-                parent.prop('checked', false);
-                //循环到顶级
-                while(dataid.lastIndexOf("-") != 2){
-                    dataid = dataid.substring(0, dataid.lastIndexOf("-"));
-                    parent = $('input[dataid=' + dataid + ']');
-                    if($('input[dataid^=' + dataid + '-]:checked').length == 0){
-                        parent.prop('checked', false);
-                    }
-                }
-            }
-        }
-    });
-});
   function cliBtn(){
     var cks = document.getElementsByName("roleid");
     var str="";
@@ -125,27 +91,35 @@
     var userid = document.getElementById("userid").value;
     var roleids =cliBtn()
     console.log(roleids)
-    $.post('/springboot/userRoleRelation?userid='+userid+'&roleid='+roleids,function (data) {
-      if (data.code==200){
-        lightyear.loading('show');
-        // 假设ajax提交操作
-        setTimeout(function () {
-          lightyear.loading('hide');
-          lightyear.notify("关联成功", 'success', 100);
+    if (roleids!=null&&roleids!="") {
+      $.post('/springboot/userRoleRelation?userid=' + userid + '&roleid=' + roleids, function (data) {
+        if (data.code == 200) {
+          lightyear.loading('show');
+          // 假设ajax提交操作
           setTimeout(function () {
-            window.location.href="/springboot/user/show";
-          },400)
-        }, 200)
-      }else {
-        lightyear.loading('show');
-        // 假设ajax提交操作
-        setTimeout(function () {
-          lightyear.loading('hide');
-          lightyear.notify("关联失败", 'danger', 100);
-        }, 200)
-      }
-    })
-
+            lightyear.loading('hide');
+            lightyear.notify("关联成功", 'success', 100);
+            setTimeout(function () {
+              window.location.href = "/springboot/user/show";
+            }, 400)
+          }, 200)
+        } else {
+          lightyear.loading('show');
+          // 假设ajax提交操作
+          setTimeout(function () {
+            lightyear.loading('hide');
+            lightyear.notify("关联失败", 'danger', 100);
+          }, 200)
+        }
+      })
+    }else {
+      lightyear.loading('show');
+      // 假设ajax提交操作
+      setTimeout(function () {
+        lightyear.loading('hide');
+        lightyear.notify("没有选中关联的角色", 'danger', 100);
+      }, 200)
+    }
   }
 </script>
 </body>

@@ -113,14 +113,17 @@ public class UserServiceImpl implements UserService {
             if ("1".equals(u.getStatus())) {
                 u.setStatus("0");
                 n += mapper.updateByPrimaryKeySelective(u);
-            }else {
-                continue;
             }
         }
         if(n<=0){
             return -1;
         }
         return n;
+    }
+
+    @Override
+    public List<YUser> show() {
+        return mapper.zshow();
     }
 
     @Override
@@ -131,8 +134,6 @@ public class UserServiceImpl implements UserService {
             if ("0".equals(u.getStatus())) {
                 u.setStatus("1");
                 n += mapper.updateByPrimaryKeySelective(u);
-            }else {
-                continue;
             }
         }
         if (n<=0){

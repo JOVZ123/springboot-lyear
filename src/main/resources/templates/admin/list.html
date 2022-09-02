@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>文档列表 - 光年(Light Year Admin)后台管理系统模板</title>
-<link rel="icon" href="../favicon.ico" type="image/ico">
+<link rel="icon" href="" type="image/ico">
 <meta name="keywords" content="LightYear,光年,后台模板,后台管理系统,光年HTML模板">
 <meta name="description" content="LightYear是一个基于Bootstrap v3.3.7的后台管理系统的HTML模板。">
 <meta name="author" content="yinqi">
@@ -100,7 +100,7 @@
                 <td>
                   <div class="btn-group">
                     <a class="btn btn-xs btn-default" th:href="@{/toUserUpd(id=*{id})}" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a>
-                    <a class="btn btn-xs btn-default" th:href="@{/user/delete(id=*{id})}"
+                    <a class="btn btn-xs btn-default" th:if="${a.id != session.admin.id}" th:href="@{/user/delete(id=*{id})}"
                        onclick="return confirm('是否删除')" href="" title="删除" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></a>
                     <a class="btn btn-xs btn-default" th:href="@{/toRelation(id=*{id})}" title="绑定角色" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></a>
                   </div>
@@ -116,6 +116,9 @@
               <a th:href="@{/user/show(pageNum=${i})}"><span th:text="${i}"></span></a>
             </li>
             <li><a th:href="@{/user/show(pageNum=${adminList.nextPage})}">»</a></li>
+            <a style="margin-left: 700px">
+              <input type="text" id="page" value="" placeholder="页" style="display:inline-block ;width: 40px ;height: 33px;outline: none "></a>
+            <a class="btn btn-primary m-r-5" onclick="formFeed()" style="line-height: 15px; width: 50px;align-content: center" >GO</a>
           </ul>
 
       </div>
@@ -134,7 +137,7 @@
 <script th:src="@{/js/bootstrap-notify.min.js}"></script>
 <script th:src="@{/js/lightyear.js}"></script>
 <script th:src="@{/js/main.min.js}"></script>
-<script type="text/javascript">
+<script type="text/javascript" th:inline="javascript">
 $(function(){
     $('.search-bar .dropdown-menu a').click(function() {
         var field = $(this).data('field') || '';
@@ -143,6 +146,15 @@ $(function(){
     });
 });
 
+
+function formFeed() {
+  var page = document.getElementById("page").value;
+  $.post("/springboot/userShow?pageNum=" + page, function (data) {
+    if (data.code == 200) {
+      window.location.href = "/springboot/user/show?pageNum=" + page;
+    }
+  })
+}
 //获取选中的id值
 function cliBtn(){
   var cks = document.getElementsByName("ids[]");
@@ -152,43 +164,57 @@ function cliBtn(){
       str+=cks[i].value+",";
     }
   }
-  str = str.substring(0,str.length-1);
+  str = str.substring(0,str.length-1); //截断最后一个“，”
   var result = str.split(",");
   return result;
 }
 function del() {
     var ids=cliBtn();
-    console.log(ids)
+    var uid = [[${session.admin.id}]]
+    for (var i = 0; i <ids.length ; i++) {
+      if (ids[i]==uid){
+        ids.splice(i,1);
+      }
+    }
     if (confirm('是否删除')){
-      $.ajax({
-        url:"/springboot/userDel?id="+ids,
-        type:"delete",
-        async:true,
-        dataType:"json",
-        success:function (data) {
-          if (data.code==200){
-            lightyear.loading('show');
-            // 假设ajax提交操作
-            setTimeout(function () {
-              lightyear.loading('hide');
-              lightyear.notify("删除成功", 'success', 100);
+      if (ids!=""&&ids!=null) {
+        $.ajax({
+          url: "/springboot/userDel?id=" + ids,
+          type: "delete",
+          async: true,
+          dataType: "json",
+          success: function (data) {
+            if (data.code == 200) {
+              lightyear.loading('show');
+              // 假设ajax提交操作
               setTimeout(function () {
-                window.location.href="/springboot/user/show";
-              },400)
-            }, 200)
-          }else{
-            lightyear.loading('show');
-            // 假设ajax提交操作
-            setTimeout(function () {
-              lightyear.loading('hide');
-              lightyear.notify("删除失败", 'danger', 100);
-            }, 200)
+                lightyear.loading('hide');
+                lightyear.notify("删除成功", 'success', 100);
+                setTimeout(function () {
+                  window.location.href = "/springboot/user/show";
+                }, 400)
+              }, 200)
+            } else {
+              lightyear.loading('show');
+              // 假设ajax提交操作
+              setTimeout(function () {
+                lightyear.loading('hide');
+                lightyear.notify("删除失败", 'danger', 100);
+              }, 200)
+            }
+          },
+          error: function () {
+            console.log("网络异常")
           }
-        },
-        error:function () {
-          console.log("网络异常")
-        }
-      })
+        })
+      }else {
+        lightyear.loading('show');
+        // 假设ajax提交操作
+        setTimeout(function () {
+          lightyear.loading('hide');
+          lightyear.notify("删除失败", 'danger', 100);
+        }, 200)
+      }
     }
 }
 function opens() {
@@ -197,7 +223,7 @@ function opens() {
   if (confirm('是否启用')){
     $.ajax({
       url:"/springboot/userOpens?id="+ids,
-      type:"get",
+      type:"put",
       async:true,
       dataType:"json",
       success:function (data) {
@@ -232,7 +258,7 @@ function disable() {
   if (confirm('是否禁用')){
     $.ajax({
       url:"/springboot/userDisable?id="+ids,
-      type:"get",
+      type:"put",
       async:true,
       dataType:"json",
       success:function (data) {
@@ -261,50 +287,6 @@ function disable() {
     })
   }
 }
-
-
-
-// $(function show(page) {
-//   $.ajax({
-//     url:"/springboot/userShow",
-//     dateType:"json",
-//     type:"post",
-//     success: function (data) {
-//       console.log(data.data.adminList)
-//       $("#tbody").html("");
-//       var str="";
-//       for (var i = 0; i <data.data.adminList.list.length ; i++) {
-//         str+="<tr><td><label class='lyear-checkbox checkbox-primary'><input type='checkbox' name='id' th:value='"+data.data.adminList.list[i].id+"'><span></span></label></td>"+
-//                 "<td>"+data.data.adminList.list[i].id+"</td>"+
-//                 "<td>"+data.data.adminList.list[i].account+"</td>"+
-//                 "<td>"+data.data.adminList.list[i].name+"</td>"+
-//                 "<td>"+data.data.adminList.list[i].headPic+"</td>"+
-//                 "<td>"+data.data.adminList.list[i].phone+"</td>"+
-//                 "<td>"+data.data.adminList.list[i].email+"</td>"+
-//                 "<td>\n" +
-//                 "<span if=\"{"+data.data.adminList.list[i].sex+" eq '1'}\">男</span>\n" +
-//                 "<span if=\"{"+data.data.adminList.list[i].sex+" eq '0'}\">女</span>\n" +
-//                 "</td>"+
-//                 "<td>\n" +
-//                 "<span class=\"text-success\" if=\"{"+data.data.adminList.list[i].status+" eq 1}\">启用</span>\n" +
-//                 "<span class=\"text-danger\" if=\"{"+data.data.adminList.list[i].status+" eq 0}\">禁用</span>\n" +
-//                 "</td>"+
-//                 "<td>\n" +
-//                 "<div class=\"btn-group\">\n" +
-//                 "<a class=\"btn btn-xs btn-default\" href=\"\" title=\"编辑\" data-toggle=\"tooltip\"><i class=\"mdi mdi-pencil\"></i></a>\n" +
-//                 "<a class=\"btn btn-xs btn-default\"  onclick=\"return confirm('是否删除?')\" href=\"\" title=\"删除\" data-toggle=\"tooltip\"><i class=\"mdi mdi-window-close\"></i></a>\n" +
-//                 "<a class=\"btn btn-xs btn-default\" href=\"../admin/resources.html\" title=\"绑定角色\" data-toggle=\"tooltip\"><i class=\"mdi mdi-window-close\"></i></a>\n" +
-//                 "</div>\n" +
-//                 "</td>\n" +
-//                 "</tr>"
-//
-//       }
-//       $("#tbody").append(str)
-//     },
-//     error:function (data) {
-//     }
-//   })
-// })
 </script>
 </body>
 </html>

@@ -3,6 +3,7 @@ package com.lanyuan.springbootlyear.mapper;
 import com.lanyuan.springbootlyear.pojo.YUser;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+import org.w3c.dom.ls.LSInput;
 
 import java.util.List;
 
@@ -28,4 +29,5 @@ public interface YUserMapper {
     int insertRelation(@Param("uid") Integer uid, @Param("rid") Integer rid);
 
     int removerelation(Integer userid);
+    List<YUser> zshow();
 }

@@ -39,7 +39,10 @@
     delete from y_role
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.lanyuan.springbootlyear.pojo.YRole">
+    <delete id="removerelation">
+      delete from y_user_role where roleid = #{roleid}
+    </delete>
+    <insert id="insert" parameterType="com.lanyuan.springbootlyear.pojo.YRole">
     insert into y_role (id, reloname, status, 
       createtime)
     values (#{id,jdbcType=INTEGER}, #{reloname,jdbcType=VARCHAR}, #{status,jdbcType=CHAR}, 

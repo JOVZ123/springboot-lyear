@@ -91,66 +91,75 @@
 <script type="text/javascript">;</script>
 </body>
 </html>
+<script language="JavaScript">
+  if (top!=window){
+    top.location.href=window.location.href;
+  }
+</script>
 <script>
   function cli() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
     var code = document.getElementById("code").value;
-    var error = document.getElementById("error");
-    if (username==null||username==""){
-      error.innerHTML="账号不可以为空";
-      return false;
-    }
-    if (password==null||password==""){
-      error.innerHTML="密码不可以为空";
-      return false;
-    }
-    if (code==null||code==""){
-      error.innerHTML="验证码不可以为空";
-      return false;
-    }
-    $.ajax({
-      dateType:"json",
-      url:"/springboot/login",
-      type:"post",
-      data:{
-        account: username,
-        password: password,
-        code:code
-      },
-      success:function (data) {
-        console.log(data)
-        if (data.code== 200){
-          console.log("true");
-          if (data.data.success) {
-            lightyear.loading('show');
-            // 假设ajax提交操作
-            setTimeout(function () {
-              lightyear.loading('hide');
-              lightyear.notify(data.data.success, 'success', 100);
+    if (username != null && username != "") {
+          if (password != null&&password!="") {
+            if (code!=null&&code!="") {
+              $.ajax({
+                url: "/springboot/login",
+                type: "post",
+                data: {
+                  account: username,
+                  password: password,
+                  code:code
+                },
+                success: function (data) {
+                  if (data.code == 200) {
+                    lightyear.loading('show');
+                    // 假设ajax提交操作
+                    setTimeout(function () {
+                      lightyear.loading('hide');
+                      lightyear.notify("登录成功", 'success', 100);
+                      setTimeout(function () {
+                        window.location.href = "/springboot/toHome"
+                      }, 700)
+                    }, 200)
+                  } else {
+                    lightyear.loading('show');
+                    // 假设ajax提交操作
+                    setTimeout(function () {
+                      lightyear.loading('hide');
+                      lightyear.notify(data.data.error, 'danger', 100);
+                    }, 200)
+                    document.getElementById("captcha").src=document.getElementById("captcha").src+'?d='+Math.random();
+                  }
+                },
+                error: function (data) {
+                  console.log("网络故障")
+                }
+              })
+            }else {
+              lightyear.loading('show');
+              // 假设ajax提交操作
               setTimeout(function () {
-                window.location.href="/springboot/toHome";
-              },1500);
-            }, 700)
-          }
-
-        }else{
-          console.log(data)
-          if (data.data.error) {
+                lightyear.loading('hide');
+                lightyear.notify("验证码不可为空", 'danger', 100);
+              }, 200)
+            }
+          } else {
             lightyear.loading('show');
             // 假设ajax提交操作
             setTimeout(function () {
               lightyear.loading('hide');
-              lightyear.notify(data.data.error, 'danger', 100);
-            }, 700)
+              lightyear.notify("密码不可为空", 'danger', 100);
+            }, 200)
           }
-          //window.location.href="/springboot/toLogin";
-          document.getElementById("captcha").src=document.getElementById("captcha").src+'?d='+Math.random();
-        }
-      },
-      error:function () {
-        console.log('网络故障')
-      }
-    });
+    } else {
+      lightyear.loading('show');
+      // 假设ajax提交操作
+      setTimeout(function () {
+        lightyear.loading('hide');
+        lightyear.notify("用户名不可为空", 'danger', 100);
+      }, 200)
+    }
   }
 </script>

@@ -38,7 +38,10 @@
           and account like #{newaccount}
         </if>
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+  <select id="zshow" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from y_user
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from y_user
     where id = #{id,jdbcType=INTEGER}
   </delete>

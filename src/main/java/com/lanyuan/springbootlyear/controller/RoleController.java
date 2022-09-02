@@ -1,13 +1,10 @@
 package com.lanyuan.springbootlyear.controller;
-
 import com.github.pagehelper.PageInfo;
 import com.lanyuan.springbootlyear.pojo.YRole;
-import com.lanyuan.springbootlyear.pojo.YUser;
 import com.lanyuan.springbootlyear.service.RoleService;
 import com.lanyuan.springbootlyear.uitl.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,7 +15,7 @@ import java.util.Set;
 public class RoleController {
     @Autowired
     RoleService roleService;
-    @RequestMapping(value = "/roleShow",method = RequestMethod.GET)
+    @RequestMapping(value = "/roleShow",method = RequestMethod.POST)
     public R roleShow(HttpSession session, @RequestParam(defaultValue = "1")Integer pageNum, @RequestParam(defaultValue = "4") Integer pageSize, String search){
         Map<String,Object> map = new HashMap<>();
         if (search==null){
@@ -46,18 +43,23 @@ public class RoleController {
     @RequestMapping(value = "/roleDel",method = RequestMethod.DELETE)
     public R roleDel(Integer[] id){
         Map<String ,Object> map = new HashMap<>();
-        Set<YRole> roles = roleService.selectById(id);
-        int i = roleService.delete(id);
-        if (i>0){
-            map.put("删除的角色信息",roles);
-           return R.ok().data(map);
+        if (id.length>0) {
+            Set<YRole> roles = roleService.selectById(id);
+            int i = roleService.delete(id);
+            if (i > 0) {
+                map.put("删除的角色信息", roles);
+                return R.ok().data(map);
+            } else {
+                map.put("error","删除失败");
+                return R.error().data(map);
+            }
         }else {
-            map.put("删除失败","error");
+            map.put( "error","没有传id值");
             return R.error().data(map);
         }
 
     }
-    @RequestMapping(value = "/roleUpd",method = RequestMethod.POST)
+    @RequestMapping(value = "/roleUpd",method = RequestMethod.PUT)
     public R roleUpd(YRole role){
         Map<String ,Object> map = new HashMap<>();
         int i = roleService.roleUpd(role);
@@ -66,21 +68,32 @@ public class RoleController {
             map.put("修改的角色信息",r);
             return R.ok().data(map);
         }else {
-            map.put("修改失败","error");
+            map.put("error","修改失败");
             return R.error().data(map);
         }
     }
     @PostMapping("/roleAdd")
-    public R roleAdd(YRole role){
-        Map<String ,Object> map = new HashMap<>();
-        role.setCreatetime(new Date());
-        int i = roleService.roleAdd(role);
-        if (i>0){
-            map.put("新增成功","success");
-            return R.ok().data(map);
+    public R roleAdd(YRole role) {
+        YRole yRole = roleService.selectByRolename(role.getReloname());
+        Map<String, Object> map = new HashMap<>();
+        if (role.getReloname().length()>0) {
+            if (yRole == null) {
+                role.setCreatetime(new Date());
+                int i = roleService.roleAdd(role);
+                if (i > 0) {
+                    map.put("success", "新增成功");
+                    return R.ok().data(map);
+                } else {
+                    map.put("error", "新增失败");
+                    return R.error().data(map);
+                }
+            } else {
+                map.put("error", "角色已存在");
+                return R.error().data(map);
+            }
         }else {
-            map.put("新增失败","error");
-            return R.ok().data(map);
+            map.put("error", "角色名不可为空");
+            return R.error().data(map);
         }
     }
 }

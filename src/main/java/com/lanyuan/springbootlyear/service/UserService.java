@@ -3,6 +3,7 @@ package com.lanyuan.springbootlyear.service;
 import com.github.pagehelper.PageInfo;
 import com.lanyuan.springbootlyear.pojo.YUser;
 
+import java.util.List;
 import java.util.Set;
 
 public interface UserService {
@@ -20,7 +21,7 @@ public interface UserService {
     int removerelation(Integer userid);
 
     int disable(Integer[] id);
-
+    List<YUser> show();
     int open(Integer[] id);
 
 }

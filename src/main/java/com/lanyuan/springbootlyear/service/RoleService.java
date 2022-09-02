@@ -15,4 +15,5 @@ public interface RoleService {
     int roleAdd(YRole yRole);
     int delete(Integer[] id);
     List<YRole> roleAll();
+
 }

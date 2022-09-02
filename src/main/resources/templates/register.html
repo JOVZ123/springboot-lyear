@@ -54,10 +54,9 @@
 <div class="row lyear-wrapper">
   <div class="lyear-login">
     <div class="login-center">
-      <div id="error" style="color: red"></div>
       <form>
         <div class="form-group has-feedback feedback-left">
-          <input type="text" placeholder="请输入您的用户名" class="form-control" onblur="selectByAccount()" name="account" id="username" />
+          <input type="text" placeholder="请输入您的用户名" class="form-control" name="account" id="username" />
           <span class="mdi mdi-account form-control-feedback" aria-hidden="true"></span>
         </div>
         <div class="form-group has-feedback feedback-left">
@@ -65,7 +64,7 @@
           <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
         </div>
         <div class="form-group has-feedback feedback-left">
-          <input type="password" placeholder="请再次输入密码" class="form-control" id="seo_password" name="seo_password" />
+          <input type="password" placeholder="请再次输入密码" class="form-control" id="seo_keywords" name="seo_password" />
           <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
         </div>
         <div class="form-group has-feedback feedback-left row">
@@ -95,98 +94,81 @@
 </body>
 </html>
 <script>
-  function selectByAccount() {
-    var username = document.getElementById("username").value;
-    if (username!=""&&username!=null){
-      $.post('/springboot/selectByAccount?account='+username,function (data) {
-        if (data.code == 200) {
-          lightyear.loading('show');
-          // 假设ajax提交操作
-          setTimeout(function () {
-            lightyear.loading('hide');
-            lightyear.notify("账号可用", 'success', 100);
-          }, 200)
-
-        }else {
-          lightyear.loading('show');
-          // 假设ajax提交操作
-          setTimeout(function () {
-            lightyear.loading('hide');
-            lightyear.notify("账号已被注册", 'danger', 100);
-          }, 200)
-        }
-      })
-    }else {
-        lightyear.loading('show');
-        // 假设ajax提交操作
-        setTimeout(function () {
-          lightyear.loading('hide');
-          lightyear.notify("账号不可以为空", 'danger', 100);
-        }, 200)
-      }
-  }
   function cli() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
-    var seo_password = document.getElementById("seo_password").value;
+    var seo_keywords = document.getElementById("seo_keywords").value;
     var code = document.getElementById("code").value;
-    if (username==null||username==""){
-      error.innerHTML="账号不可以为空";
-      return false;
-    }
-    if (password==null||password==""){
-      error.innerHTML="密码不可以为空";
-      return false;
-    }
-    if (seo_password!=password){
-      error.innerHTML="两次密码不匹配";
-      return false;
-    }
-    if (code==null||code==""){
-      error.innerHTML="验证码不可以为空";
-      return false;
-    }
-    $.ajax({
-      dateType: "json",
-      url:"/springboot/register",
-      type:"post",
-      data:{
-        account: username,
-        password:password,
-        code:code
-      },
-      success:function (data) {
-        console.log(data)
-        if (data.code==200){
-          console.log(data)
-          if (data.data.success) {
+    if (username != null && username != "") {
+      $.post('/springboot/selectByAccount?account=' + username, function (data) {
+        if (data.code == 200) {
+          if (password != null && password == seo_keywords) {
+            if (code!=null&&code!="") {
+              $.ajax({
+                url: "/springboot/register",
+                type: "post",
+                data: {
+                  account: username,
+                  password: password,
+                  code:code
+                },
+                success: function (data) {
+                  if (data.code == 200) {
+                    lightyear.loading('show');
+                    // 假设ajax提交操作
+                    setTimeout(function () {
+                      lightyear.loading('hide');
+                      lightyear.notify("注册成功", 'success', 100);
+                      setTimeout(function () {
+                        window.location.href = "/springboot/toLogin"
+                      }, 700)
+                    }, 200)
+                  } else {
+                    lightyear.loading('show');
+                    // 假设ajax提交操作
+                    setTimeout(function () {
+                      lightyear.loading('hide');
+                      lightyear.notify(data.data.error, 'danger', 100);
+                    }, 200)
+                    document.getElementById("captcha").src=document.getElementById("captcha").src+'?d='+Math.random();
+                  }
+                },
+                error: function (data) {
+                  console.log("网络故障")
+                }
+              })
+            }else {
+              lightyear.loading('show');
+              // 假设ajax提交操作
+              setTimeout(function () {
+                lightyear.loading('hide');
+                lightyear.notify("验证码不可为空", 'danger', 100);
+              }, 200)
+            }
+          } else {
             lightyear.loading('show');
             // 假设ajax提交操作
             setTimeout(function () {
               lightyear.loading('hide');
-              lightyear.notify(data.data.success, 'success', 100);
-              setTimeout(function () {
-                window.location.href="/springboot/toLogin";
-              },1500)
-            }, 700)
+              lightyear.notify("两次密码输入不一致", 'danger', 100);
+            }, 200)
           }
         }else {
-          console.log(data)
-          if (data.data.error) {
-            lightyear.loading('show');
-            // 假设ajax提交操作
-            setTimeout(function () {
-              lightyear.loading('hide');
-              lightyear.notify(data.data.error, 'danger', 100);
-            }, 700)
-          }
-          //window.location.href="/springboot/toRegister"
-          document.getElementById("captcha").src=document.getElementById("captcha").src+'?d='+Math.random();
+          lightyear.loading('show');
+          // 假设ajax提交操作
+          setTimeout(function () {
+            lightyear.loading('hide');
+            lightyear.notify("用户名已存在", 'danger', 100);
+          }, 200)
         }
-      },
-      error:function (data) {
-        console.log('网络故障')
-      }
-    });
+      })
+    } else {
+      lightyear.loading('show');
+      // 假设ajax提交操作
+      setTimeout(function () {
+        lightyear.loading('hide');
+        lightyear.notify("用户名不可为空", 'danger', 100);
+      }, 200)
+    }
   }
 </script>

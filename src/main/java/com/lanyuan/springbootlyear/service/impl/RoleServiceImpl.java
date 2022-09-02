@@ -60,6 +60,7 @@ public class RoleServiceImpl implements RoleService {
     public int delete(Integer[] id) {
         int n=0;
         for (Integer i : id) {
+            mapper.removerelation(i);
             n+=mapper.deleteByPrimaryKey(i);
         }
         if (n<=0){
